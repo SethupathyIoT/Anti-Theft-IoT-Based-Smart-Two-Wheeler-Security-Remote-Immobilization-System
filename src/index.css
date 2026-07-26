@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #0B1220;
+    color: #F8FAFC;
+    font-family: 'Inter', 'Poppins', sans-serif;
+  }
+}
+
+/* Glassmorphism utility card */
+.glass-card {
+  background: rgba(19, 28, 46, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 12px 40px 0 rgba(11, 18, 32, 0.6), 0 0 20px rgba(59, 130, 246, 0.15);
+}
+
+.glass-card-danger {
+  background: rgba(239, 68, 68, 0.08);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  box-shadow: 0 0 25px rgba(239, 68, 68, 0.25);
+  border-radius: 16px;
+}
+
+/* Glow effects */
+.glow-blue {
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+}
+
+.glow-green {
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.5);
+}
+
+.glow-red {
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.7);
+}
+
+.glow-orange {
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+}
+
+/* Custom Scrollbar for terminal & logs */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0B1220;
+}
+::-webkit-scrollbar-thumb {
+  background: #1E2D4A;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3B82F6;
+}
+
+/* Pulse animation for green online indicator */
+@keyframes onlinePulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+.online-dot {
+  width: 10px;
+  height: 10px;
+  background-color: #22C55E;
+  border-radius: 50%;
+  animation: onlinePulse 2s infinite;
+}
+
+/* Emergency Stop Button Pulse */
+@keyframes emergencyPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8), 0 0 20px rgba(239, 68, 68, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 16px rgba(239, 68, 68, 0), 0 0 40px rgba(239, 68, 68, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.8), 0 0 20px rgba(239, 68, 68, 0.5);
+  }
+}
+
+.btn-emergency-pulse {
+  animation: emergencyPulse 1.8s infinite ease-in-out;
+}
+
+/* Dark mode overrides for Leaflet map */
+.leaflet-container {
+  background-color: #0B1220 !important;
+  border-radius: 12px;
+}
