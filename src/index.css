@@ -113,3 +113,272 @@
   background-color: #0B1220 !important;
   border-radius: 12px;
 }
+
+/* ─── Premium Hero Section ─── */
+
+.hero-3d-canvas {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 1.2s ease-in-out;
+  will-change: opacity;
+}
+
+.hero-3d-loaded {
+  opacity: 1;
+}
+
+.hero-viewer-hint-ring {
+  animation: heroHintPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes heroHintPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.25);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 12px rgba(59, 130, 246, 0);
+  }
+}
+
+.hero-viewer-reset {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+}
+
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.08) 1px, transparent 1px);
+  background-size: 48px 48px;
+  animation: heroGridMove 20s linear infinite;
+  will-change: background-position;
+}
+
+@keyframes heroGridMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 48px 48px; }
+}
+
+.hero-streak {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.6), transparent);
+  opacity: 0.4;
+  will-change: transform;
+}
+
+.hero-streak-1 {
+  top: 30%;
+  width: 40%;
+  left: -40%;
+  animation: heroStreak 8s ease-in-out infinite;
+}
+
+.hero-streak-2 {
+  top: 55%;
+  width: 30%;
+  left: -30%;
+  animation: heroStreak 12s ease-in-out infinite 3s;
+  background: linear-gradient(90deg, transparent, rgba(52, 211, 153, 0.5), transparent);
+}
+
+.hero-streak-3 {
+  top: 75%;
+  width: 35%;
+  left: -35%;
+  animation: heroStreak 10s ease-in-out infinite 6s;
+}
+
+@keyframes heroStreak {
+  0% { transform: translateX(0); opacity: 0; }
+  10% { opacity: 0.5; }
+  90% { opacity: 0.5; }
+  100% { transform: translateX(calc(100vw + 100%)); opacity: 0; }
+}
+
+/* Radar scanning */
+.hero-radar-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  will-change: transform, opacity;
+}
+
+.hero-radar-ring-1 {
+  width: 180px;
+  height: 180px;
+  animation: heroRadarPulse 4s ease-out infinite;
+}
+
+.hero-radar-ring-2 {
+  width: 280px;
+  height: 280px;
+  animation: heroRadarPulse 4s ease-out infinite 1.3s;
+}
+
+.hero-radar-ring-3 {
+  width: 380px;
+  height: 380px;
+  animation: heroRadarPulse 4s ease-out infinite 2.6s;
+}
+
+@keyframes heroRadarPulse {
+  0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0.6; }
+  100% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; }
+}
+
+.hero-radar-sweep {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200px;
+  height: 200px;
+  transform: translate(-50%, -50%);
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(59, 130, 246, 0.15) 30deg, transparent 60deg);
+  border-radius: 50%;
+  animation: heroRadarSweep 4s linear infinite;
+  will-change: transform;
+}
+
+@keyframes heroRadarSweep {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Pulsing tracking rings */
+.hero-pulse-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120px;
+  height: 120px;
+  border: 2px solid rgba(59, 130, 246, 0.4);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: heroPulseRing 3s ease-out infinite;
+  will-change: transform, opacity;
+}
+
+.hero-pulse-ring-delay {
+  animation-delay: 1.5s;
+}
+
+@keyframes heroPulseRing {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+}
+
+/* Route path animation */
+.hero-route-path {
+  animation: heroRouteDash 3s linear infinite;
+}
+
+.hero-route-path-2 {
+  animation: heroRouteDash 4s linear infinite reverse;
+}
+
+@keyframes heroRouteDash {
+  to { stroke-dashoffset: -28; }
+}
+
+/* Floating security icons */
+.hero-float-icon {
+  animation: heroFloat 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+.hero-float-icon-delay {
+  animation-delay: 1.3s;
+}
+
+.hero-float-icon-delay-2 {
+  animation-delay: 2.1s;
+}
+
+@keyframes heroFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Animated gradient orbs */
+.hero-gradient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.hero-gradient-orb-1 {
+  top: 15%;
+  right: 20%;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.18) 0%, transparent 70%);
+  animation: heroOrbFloat1 12s ease-in-out infinite;
+}
+
+.hero-gradient-orb-2 {
+  bottom: 20%;
+  left: 15%;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%);
+  animation: heroOrbFloat2 15s ease-in-out infinite;
+}
+
+.hero-gradient-orb-3 {
+  top: 45%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  height: 250px;
+  background: radial-gradient(ellipse, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+  animation: heroOrbFloat3 18s ease-in-out infinite;
+}
+
+@keyframes heroOrbFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.8; }
+  50% { transform: translate(-30px, 20px) scale(1.1); opacity: 1; }
+}
+
+@keyframes heroOrbFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.7; }
+  50% { transform: translate(25px, -15px) scale(1.08); opacity: 0.9; }
+}
+
+@keyframes heroOrbFloat3 {
+  0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.6; }
+  50% { transform: translateX(-50%) scale(1.15); opacity: 0.85; }
+}
+
+.hero-subtle-vignette {
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(5, 8, 22, 0.5) 100%);
+  pointer-events: none;
+}
+
+.hero-gps-pulse {
+  background: rgba(59, 130, 246, 0.25);
+  animation: heroGpsPulse 2.5s ease-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes heroGpsPulse {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+@media (max-width: 768px) {
+  .hero-radar-ring-1 { width: 120px; height: 120px; }
+  .hero-radar-ring-2 { width: 180px; height: 180px; }
+  .hero-radar-ring-3 { width: 240px; height: 240px; }
+  .hero-radar-sweep { width: 140px; height: 140px; }
+  .hero-gradient-orb-1 { width: 250px; height: 250px; }
+  .hero-gradient-orb-2 { width: 200px; height: 200px; }
+  .hero-gradient-orb-3 { width: 300px; height: 150px; }
+}

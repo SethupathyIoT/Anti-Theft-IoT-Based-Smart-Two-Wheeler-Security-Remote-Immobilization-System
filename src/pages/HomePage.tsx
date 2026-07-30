@@ -6,23 +6,17 @@ import {
   Zap, 
   MapPin, 
   Lock, 
-  ArrowRight, 
-  Sparkles,
   Layers,
   BatteryCharging,
-  Sliders,
   CheckCircle2,
   AlertTriangle,
   Radio,
   Gauge,
-  Smartphone,
   Server,
-  FileCode,
-  Terminal,
   RefreshCw,
-  Eye
 } from 'lucide-react';
 import { useTelemetry } from '../context/TelemetryContext';
+import { HeroSection } from '../components/hero/HeroSection';
 
 export const HomePage: React.FC = () => {
   const { setActiveTab } = useTelemetry();
@@ -150,71 +144,11 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="space-y-12 pb-12">
-      {/* HERO SECTION */}
-      <section className="relative overflow-hidden glass-card p-8 md:p-12 border-blue-500/30 bg-gradient-to-br from-[#131C2E] via-[#0B1220] to-[#131C2E]">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 max-w-4xl space-y-6">
-          <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/30 px-3.5 py-1.5 rounded-full text-xs font-bold text-blue-400">
-            <Sparkles className="w-4 h-4 text-blue-400 animate-pulse" />
-            <span>Commercial-Grade Automotive SaaS & IoT Security System</span>
-          </div>
-
-          <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">
-            Smart Two-Wheeler <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-emerald-400 to-indigo-400">
-              Theft Detection & Remote Immobilization
-            </span>
-          </h1>
-
-          <p className="text-sm md:text-base text-slate-300 font-medium leading-relaxed max-w-3xl">
-            A comprehensive, enterprise-ready IoT platform designed to prevent two-wheeler theft. Powered by the <strong>ESP32 DevKit V1 (38-Pin)</strong>, <strong>ACS712 Current Sensor</strong>, <strong>L298N Motor Driver</strong>, <strong>GPIO 4 Push Button Tamper Switch</strong>, <strong>NEO-6M GPS Receiver</strong>, and <strong>Firebase Realtime Database</strong>.
-          </p>
-
-          <div className="flex flex-wrap items-center gap-4 pt-2">
-            <button
-              onClick={() => setActiveTab('dashboard')}
-              className="px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs tracking-wide flex items-center gap-2.5 shadow-xl shadow-blue-600/30 transition-all transform hover:-translate-y-0.5"
-            >
-              <Gauge className="w-4 h-4" />
-              <span>Launch Live Telemetry Dashboard</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-
-            <button
-              onClick={() => setActiveTab('esp32')}
-              className="px-6 py-3.5 rounded-xl bg-[#0B1220] border border-[#1E2D4A] hover:border-emerald-500/40 text-slate-200 font-bold text-xs flex items-center gap-2 transition-all"
-            >
-              <Cpu className="w-4 h-4 text-emerald-400" />
-              <span>View ESP32 Firmware & Pinout</span>
-            </button>
-          </div>
-
-          {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-[#1E2D4A]/80">
-            <div className="bg-[#0B1220]/60 p-3 rounded-xl border border-[#1E2D4A]/60">
-              <span className="text-[11px] font-semibold text-slate-400 block uppercase">Response Latency</span>
-              <strong className="text-lg font-black text-emerald-400 font-mono">38 ms</strong>
-            </div>
-
-            <div className="bg-[#0B1220]/60 p-3 rounded-xl border border-[#1E2D4A]/60">
-              <span className="text-[11px] font-semibold text-slate-400 block uppercase">Immobilization Method</span>
-              <strong className="text-lg font-black text-blue-400 font-mono">7-Stage PWM</strong>
-            </div>
-
-            <div className="bg-[#0B1220]/60 p-3 rounded-xl border border-[#1E2D4A]/60">
-              <span className="text-[11px] font-semibold text-slate-400 block uppercase">Telemetry Sync</span>
-              <strong className="text-lg font-black text-purple-400 font-mono">Firebase RTDB</strong>
-            </div>
-
-            <div className="bg-[#0B1220]/60 p-3 rounded-xl border border-[#1E2D4A]/60">
-              <span className="text-[11px] font-semibold text-slate-400 block uppercase">Hardware Platform</span>
-              <strong className="text-lg font-black text-amber-400 font-mono">ESP32 38-Pin</strong>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* PREMIUM 3D HERO SECTION */}
+      <HeroSection
+        onLaunchDashboard={() => setActiveTab('dashboard')}
+        onViewFirmware={() => setActiveTab('esp32')}
+      />
 
       {/* EXECUTIVE SUMMARY & PROBLEM STATEMENT */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
