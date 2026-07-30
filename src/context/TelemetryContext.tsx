@@ -121,8 +121,8 @@ export const TelemetryProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [alerts, setAlerts] = useState<SecurityAlert[]>(initialAlerts);
   const [logs, setLogs] = useState<SystemLog[]>(initialLogs);
   const [historyData, setHistoryData] = useState<{ time: string; speed: number; rpm: number; current: number; voltage: number }[]>([]);
-  const [isSimulatorActive, setIsSimulatorActive] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<string>("dashboard");
+  const [isSimulatorActive, setIsSimulatorActive] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string>("home");
   const [settings, setSettings] = useState<SystemSettings>(initialSettings);
   
   const [immobilization, setImmobilization] = useState<ImmobilizationProgress>({

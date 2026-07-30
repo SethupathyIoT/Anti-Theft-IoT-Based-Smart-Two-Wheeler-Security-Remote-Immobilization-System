@@ -2,6 +2,7 @@ import React from 'react';
 import { 
   Shield, 
   Home, 
+  Gauge, 
   Activity, 
   Bell, 
   Sliders, 
@@ -26,13 +27,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
   const unreadAlerts = alerts.filter(a => !a.read).length;
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: Home },
+    { id: 'home', label: 'Home (3D Showcase)', icon: Home },
+    { id: 'dashboard', label: 'Dashboard', icon: Gauge },
     { id: 'live-monitor', label: 'Live Monitor', icon: Activity },
     { id: 'alerts', label: 'Alerts', icon: Bell, badge: unreadAlerts > 0 ? unreadAlerts : null },
     { id: 'control', label: 'Vehicle Control', icon: Sliders },
     { id: 'analytics', label: 'Analytics', icon: Activity },
     { id: 'history', label: 'History', icon: History },
     { id: 'settings', label: 'Settings', icon: SettingsIcon },
+    { id: 'esp32', label: 'ESP32 Firmware', icon: Cpu },
     { id: 'profile', label: 'Profile', icon: User },
   ];
 

@@ -3,12 +3,14 @@ import { TelemetryProvider, useTelemetry } from './context/TelemetryContext';
 import { Sidebar } from './components/Sidebar';
 import { TopNavbar } from './components/TopNavbar';
 import { DashboardPage } from './pages/DashboardPage';
+import { HomePage } from './pages/HomePage';
 import { LiveMonitorPage } from './pages/LiveMonitorPage';
 import { AlertsPage } from './pages/AlertsPage';
 import { ControlPage } from './pages/ControlPage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { Esp32Page } from './pages/Esp32Page';
 import { ProfilePage } from './pages/ProfilePage';
 
 const AppContent: React.FC = () => {
@@ -16,6 +18,8 @@ const AppContent: React.FC = () => {
 
   const renderCurrentTab = () => {
     switch (activeTab) {
+      case 'home':
+        return <HomePage />;
       case 'dashboard':
         return <DashboardPage />;
       case 'live-monitor':
@@ -30,10 +34,12 @@ const AppContent: React.FC = () => {
         return <HistoryPage />;
       case 'settings':
         return <SettingsPage />;
+      case 'esp32':
+        return <Esp32Page />;
       case 'profile':
         return <ProfilePage />;
       default:
-        return <DashboardPage />;
+        return <HomePage />;
     }
   };
 
