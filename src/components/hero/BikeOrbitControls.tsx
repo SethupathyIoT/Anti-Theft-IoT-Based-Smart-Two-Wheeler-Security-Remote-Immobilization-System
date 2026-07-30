@@ -7,8 +7,8 @@ import { easeOutCubic } from './heroAnimations';
 import { BIKE_MODEL_NAME } from './BikeModel';
 import { useHeroScene } from './HeroSceneContext';
 
-const DEFAULT_TARGET = new THREE.Vector3(0, 0.4, 0);
-const DEFAULT_CAMERA = new THREE.Vector3(0, 1.2, 8);
+const DEFAULT_TARGET = new THREE.Vector3(0, 0.75, 0);
+const DEFAULT_CAMERA = new THREE.Vector3(1.5, 2.1, 11);
 
 interface ZoomAnimation {
   startPos: THREE.Vector3;
@@ -101,9 +101,10 @@ export const BikeOrbitControls: React.FC = () => {
       zoomSpeed={0.9}
       panSpeed={0.5}
       minDistance={0.35}
-      maxDistance={22}
+      maxDistance={34}
       minPolarAngle={0.05}
-      maxPolarAngle={Math.PI / 1.35}
+      // Stop just above the horizon — the street is a real surface now.
+      maxPolarAngle={Math.PI / 2.06}
       mouseButtons={{
         LEFT: THREE.MOUSE.ROTATE,
         MIDDLE: THREE.MOUSE.DOLLY,
