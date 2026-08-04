@@ -15,18 +15,8 @@ import {
 import { Activity, Gauge, Zap, BatteryCharging, Signal } from 'lucide-react';
 import { useTelemetry } from '../context/TelemetryContext';
 
-const weeklyData = [
-  { day: 'Mon', speed: 22, battery: 12.6, alerts: 1, distance: 14.2 },
-  { day: 'Tue', speed: 28, battery: 12.5, alerts: 0, distance: 18.5 },
-  { day: 'Wed', speed: 32, battery: 12.4, alerts: 2, distance: 24.0 },
-  { day: 'Thu', speed: 18, battery: 12.4, alerts: 0, distance: 12.8 },
-  { day: 'Fri', speed: 35, battery: 12.3, alerts: 1, distance: 29.4 },
-  { day: 'Sat', speed: 42, battery: 12.2, alerts: 3, distance: 38.1 },
-  { day: 'Sun', speed: 25, battery: 12.4, alerts: 0, distance: 19.6 },
-];
-
 export const AnalyticsPage: React.FC = () => {
-  const { historyData, telemetry } = useTelemetry();
+  const { historyData, telemetry, alerts } = useTelemetry();
 
   return (
     <div className="space-y-6">
@@ -36,71 +26,73 @@ export const AnalyticsPage: React.FC = () => {
           IoT Telemetry & Performance Analytics
         </h2>
         <p className="text-xs text-slate-400 mt-1">
-          Historical trends, weekly activity metrics, battery discharge, and signal diagnostic logs
+          Historical trends, motor load curves, battery discharge, and live sensor feeds
         </p>
       </div>
 
-      {/* Top 4 KPI Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Top 2 Real Hardware KPI Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="glass-card p-4">
-          <span className="text-xs font-semibold text-slate-400 uppercase">Weekly Distance</span>
-          <div className="text-2xl font-black text-blue-400 font-mono mt-1">156.6 km</div>
-          <span className="text-[11px] text-emerald-400 font-medium">↑ +12.4% vs last week</span>
-        </div>
-
-        <div className="glass-card p-4">
-          <span className="text-xs font-semibold text-slate-400 uppercase">Avg Daily Speed</span>
-          <div className="text-2xl font-black text-emerald-400 font-mono mt-1">28.9 km/h</div>
-          <span className="text-[11px] text-slate-400 font-medium">Peak: 45 km/h</span>
+          <span className="text-xs font-semibold text-slate-400 uppercase">Live Vehicle Speed</span>
+          <div className="text-2xl font-black text-blue-400 font-mono mt-1">{telemetry.vehicleSpeed} km/h</div>
+          <span className="text-[11px] text-slate-400 font-medium">Motor RPM: {telemetry.motorRPM}</span>
         </div>
 
         <div className="glass-card p-4">
           <span className="text-xs font-semibold text-slate-400 uppercase">Total Security Alerts</span>
-          <div className="text-2xl font-black text-amber-400 font-mono mt-1">7 Events</div>
-          <span className="text-[11px] text-amber-400 font-medium">1 Lock Tamper Trigger</span>
-        </div>
-
-        <div className="glass-card p-4">
-          <span className="text-xs font-semibold text-slate-400 uppercase">System Uptime</span>
-          <div className="text-2xl font-black text-purple-400 font-mono mt-1">99.8%</div>
-          <span className="text-[11px] text-emerald-400 font-medium">ESP32 & GSM Stable</span>
+          <div className="text-2xl font-black text-amber-400 font-mono mt-1">{alerts.length} Events</div>
+          <span className="text-[11px] text-amber-400 font-medium">
+            {telemetry.sideLockStatus === 'BROKEN' ? 'Tamper Active' : 'System Secure'}
+          </span>
         </div>
       </div>
 
-      {/* Weekly Activity & Distance Chart */}
+      {/* Real-time Hardware Telemetry Buffer Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="glass-card p-5 space-y-3">
           <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-            Weekly Distance Traveled (km)
+            Live Speed Buffer (km/h)
           </h3>
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={weeklyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1E2D4A" />
-                <XAxis dataKey="day" stroke="#64748B" tick={{ fontSize: 11 }} />
-                <YAxis stroke="#64748B" tick={{ fontSize: 11 }} />
-                <Tooltip contentStyle={{ backgroundColor: '#131C2E', borderColor: '#1E2D4A', fontSize: '12px' }} />
-                <Bar dataKey="distance" fill="#3B82F6" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {historyData.length < 2 ? (
+              <div className="h-full flex items-center justify-center text-slate-500 text-xs">
+                Awaiting live sensor stream from ESP32...
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={historyData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1E2D4A" />
+                  <XAxis dataKey="time" stroke="#64748B" tick={{ fontSize: 10 }} />
+                  <YAxis stroke="#64748B" tick={{ fontSize: 10 }} />
+                  <Tooltip contentStyle={{ backgroundColor: '#131C2E', borderColor: '#1E2D4A', fontSize: '12px' }} />
+                  <Bar dataKey="speed" fill="#3B82F6" radius={[6, 6, 0, 0]} name="Speed (km/h)" />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
 
-        {/* Battery Discharge & Voltage Spectrum */}
+        {/* Motor RPM Buffer */}
         <div className="glass-card p-5 space-y-3">
           <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-            Battery Health & Voltage Spectrum (7-Day Trend)
+            Motor Speed & RPM Curve
           </h3>
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={weeklyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1E2D4A" />
-                <XAxis dataKey="day" stroke="#64748B" tick={{ fontSize: 11 }} />
-                <YAxis stroke="#64748B" tick={{ fontSize: 11 }} domain={[11.5, 13.0]} />
-                <Tooltip contentStyle={{ backgroundColor: '#131C2E', borderColor: '#1E2D4A', fontSize: '12px' }} />
-                <Line type="monotone" dataKey="battery" stroke="#22C55E" strokeWidth={3} dot={{ r: 4 }} />
-              </LineChart>
-            </ResponsiveContainer>
+            {historyData.length < 2 ? (
+              <div className="h-full flex items-center justify-center text-slate-500 text-xs">
+                Awaiting live motor RPM stream...
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={historyData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#1E2D4A" />
+                  <XAxis dataKey="time" stroke="#64748B" tick={{ fontSize: 10 }} />
+                  <YAxis stroke="#64748B" tick={{ fontSize: 10 }} />
+                  <Tooltip contentStyle={{ backgroundColor: '#131C2E', borderColor: '#1E2D4A', fontSize: '12px' }} />
+                  <Line type="monotone" dataKey="rpm" stroke="#22C55E" strokeWidth={2.5} dot={false} name="RPM" />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
       </div>

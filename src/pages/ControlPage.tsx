@@ -65,36 +65,6 @@ export const ControlPage: React.FC = () => {
               <span>Toggle Lock</span>
             </button>
           </div>
-
-          {/* Horn Buzzer Test */}
-          <div className="bg-[#0B1220] p-4 rounded-xl border border-[#1E2D4A] flex items-center justify-between">
-            <div>
-              <h4 className="text-xs font-bold text-white">Piezo Buzzer / Horn</h4>
-              <p className="text-[11px] text-slate-400 mt-0.5">3-second alarm pulse test</p>
-            </div>
-            <button
-              onClick={triggerHorn}
-              className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold transition-all flex items-center gap-2"
-            >
-              <Volume2 className="w-4 h-4" />
-              <span>Sound Horn</span>
-            </button>
-          </div>
-
-          {/* Headlight Strobe Test */}
-          <div className="bg-[#0B1220] p-4 rounded-xl border border-[#1E2D4A] flex items-center justify-between">
-            <div>
-              <h4 className="text-xs font-bold text-white">Headlight Strobe Flasher</h4>
-              <p className="text-[11px] text-slate-400 mt-0.5">4x High-beam strobe flash</p>
-            </div>
-            <button
-              onClick={flashHeadlight}
-              className="px-4 py-2 rounded-xl bg-yellow-600 hover:bg-yellow-500 text-white text-xs font-bold transition-all flex items-center gap-2"
-            >
-              <Sun className="w-4 h-4" />
-              <span>Flash Lights</span>
-            </button>
-          </div>
         </div>
 
         {/* PWM & Speed Modulation */}

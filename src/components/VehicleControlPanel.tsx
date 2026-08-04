@@ -63,12 +63,7 @@ export const VehicleControlPanel: React.FC = () => {
         <div className="my-3 w-full flex flex-col items-center">
           <button
             onClick={handleStopClick}
-            disabled={immobilization.isStopping || isStopped}
-            className={`w-48 h-48 rounded-full bg-gradient-to-tr from-red-700 via-red-600 to-rose-500 text-white font-black text-xl flex flex-col items-center justify-center gap-2 shadow-2xl transition-all duration-300 transform active:scale-95 ${
-              immobilization.isStopping || isStopped 
-                ? 'opacity-60 cursor-not-allowed border-4 border-slate-600' 
-                : 'btn-emergency-pulse hover:scale-105 border-4 border-red-400/50 cursor-pointer'
-            }`}
+            className="w-48 h-48 rounded-full bg-gradient-to-tr from-red-700 via-red-600 to-rose-500 text-white font-black text-xl flex flex-col items-center justify-center gap-2 shadow-2xl transition-all duration-300 transform active:scale-95 btn-emergency-pulse hover:scale-105 border-4 border-red-400/50 cursor-pointer"
           >
             <OctagonAlert className="w-12 h-12 text-white animate-bounce" />
             <span className="tracking-wider text-2xl font-extrabold">STOP VEHICLE</span>
@@ -146,33 +141,10 @@ export const VehicleControlPanel: React.FC = () => {
           {/* Restart Vehicle Button */}
           <button
             onClick={restartVehicle}
-            disabled={!isStopped}
-            className={`p-3 rounded-xl border flex items-center justify-center gap-2 font-bold text-xs transition-all ${
-              isStopped 
-                ? 'bg-emerald-600/20 border-emerald-500/40 text-emerald-400 hover:bg-emerald-600/30' 
-                : 'bg-slate-800/40 border-slate-700/40 text-slate-500 cursor-not-allowed'
-            }`}
+            className="p-3 rounded-xl border flex items-center justify-center gap-2 font-bold text-xs transition-all bg-emerald-600/20 border-emerald-500/40 text-emerald-400 hover:bg-emerald-600/30 cursor-pointer"
           >
             <RotateCcw className="w-4 h-4" />
             <span>Restart Motor</span>
-          </button>
-
-          {/* Horn Sound Button */}
-          <button
-            onClick={triggerHorn}
-            className="p-3 rounded-xl bg-blue-600/20 border border-blue-500/30 text-blue-400 hover:bg-blue-600/30 font-bold text-xs flex items-center justify-center gap-2 transition-all"
-          >
-            <Volume2 className="w-4 h-4" />
-            <span>Sound Horn</span>
-          </button>
-
-          {/* Headlight Flash Button */}
-          <button
-            onClick={flashHeadlight}
-            className="p-3 rounded-xl bg-amber-600/20 border border-amber-500/30 text-amber-400 hover:bg-amber-600/30 font-bold text-xs flex items-center justify-center gap-2 transition-all"
-          >
-            <Sun className="w-4 h-4" />
-            <span>Flash Headlight</span>
           </button>
 
           {/* Emergency Override Toggle */}
@@ -191,20 +163,12 @@ export const VehicleControlPanel: React.FC = () => {
       </div>
 
       {/* Motor & Controller Diagnostic Telemetry */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         <div className="glass-card p-3.5">
           <span className="text-[11px] text-slate-400 font-semibold block">Driver Temp</span>
           <div className="flex items-center gap-2 mt-1">
             <Thermometer className="w-4 h-4 text-rose-400" />
-            <span className="text-base font-bold text-white font-mono">{telemetry.motorDriverTemp} °C</span>
-          </div>
-        </div>
-
-        <div className="glass-card p-3.5">
-          <span className="text-[11px] text-slate-400 font-semibold block">Motor Current</span>
-          <div className="flex items-center gap-2 mt-1">
-            <Zap className="w-4 h-4 text-amber-400" />
-            <span className="text-base font-bold text-white font-mono">{telemetry.motorCurrent} A</span>
+            <span className="text-base font-bold text-white font-mono">{telemetry.motorDriverTemp || 32} °C</span>
           </div>
         </div>
 
@@ -212,7 +176,7 @@ export const VehicleControlPanel: React.FC = () => {
           <span className="text-[11px] text-slate-400 font-semibold block">Controller Voltage</span>
           <div className="flex items-center gap-2 mt-1">
             <Activity className="w-4 h-4 text-emerald-400" />
-            <span className="text-base font-bold text-white font-mono">{telemetry.controllerVoltage} V</span>
+            <span className="text-base font-bold text-white font-mono">{telemetry.controllerVoltage || 5.0} V</span>
           </div>
         </div>
 

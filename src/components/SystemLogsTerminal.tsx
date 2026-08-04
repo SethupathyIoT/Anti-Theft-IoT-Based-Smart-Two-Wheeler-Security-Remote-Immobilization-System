@@ -4,10 +4,12 @@ import { useTelemetry } from '../context/TelemetryContext';
 
 export const SystemLogsTerminal: React.FC = () => {
   const { logs } = useTelemetry();
-  const terminalEndRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight;
+    }
   }, [logs]);
 
   const getLevelBadge = (level: string) => {
@@ -39,7 +41,7 @@ export const SystemLogsTerminal: React.FC = () => {
       </div>
 
       {/* Terminal Content Body */}
-      <div className="flex-1 bg-[#070C14] rounded-xl p-3.5 border border-[#1E2D4A] overflow-y-auto font-mono text-xs space-y-2 select-text">
+      <div ref={containerRef} className="flex-1 bg-[#070C14] rounded-xl p-3.5 border border-[#1E2D4A] overflow-y-auto font-mono text-xs space-y-2 select-text">
         {logs.length === 0 ? (
           <p className="text-slate-600 text-center py-8">Terminal output stream initialized...</p>
         ) : (
@@ -63,7 +65,6 @@ export const SystemLogsTerminal: React.FC = () => {
             </div>
           ))
         )}
-        <div ref={terminalEndRef} />
       </div>
     </div>
   );

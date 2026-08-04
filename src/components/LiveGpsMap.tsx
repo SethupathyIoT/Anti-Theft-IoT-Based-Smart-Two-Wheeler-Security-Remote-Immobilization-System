@@ -30,14 +30,10 @@ const MapRecenter: React.FC<{ center: [number, number] }> = ({ center }) => {
 export const LiveGpsMap: React.FC = () => {
   const { telemetry } = useTelemetry();
 
-  const position: [number, number] = [telemetry.gpsLatitude, telemetry.gpsLongitude];
+  const isGpsValid = telemetry.gpsLatitude !== 0 && telemetry.gpsLongitude !== 0;
+  const position: [number, number] = isGpsValid ? [telemetry.gpsLatitude, telemetry.gpsLongitude] : [11.0168, 76.9558];
   
-  // Simulated route path history line
-  const routeHistory: [number, number][] = [
-    [telemetry.gpsLatitude - 0.002, telemetry.gpsLongitude - 0.003],
-    [telemetry.gpsLatitude - 0.001, telemetry.gpsLongitude - 0.0015],
-    [telemetry.gpsLatitude, telemetry.gpsLongitude]
-  ];
+  const routeHistory: [number, number][] = isGpsValid ? [position] : [];
 
   const handleOpenGoogleMaps = () => {
     window.open(`https://www.google.com/maps/search/?api=1&query=${telemetry.gpsLatitude},${telemetry.gpsLongitude}`, '_blank');
@@ -113,7 +109,9 @@ export const LiveGpsMap: React.FC = () => {
           </div>
           <div>
             <span className="text-slate-400 block">Satellites</span>
-            <span className="text-blue-400 font-bold font-mono">{telemetry.satelliteCount} Sats</span>
+            <span className="text-blue-400 font-bold font-mono">
+              {telemetry.satellites !== undefined ? telemetry.satellites : telemetry.satelliteCount} Sats
+            </span>
           </div>
           <div>
             <span className="text-slate-400 block">Accuracy</span>

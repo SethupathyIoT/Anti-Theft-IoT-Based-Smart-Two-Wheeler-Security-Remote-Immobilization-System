@@ -9,7 +9,7 @@ export interface TelemetryData {
 
   // Key Telemetry States
   vehicleStatus: 'SAFE' | 'THREAT_DETECTED';
-  sideLockStatus: 'LOCKED' | 'BROKEN';
+  sideLockStatus: 'SAFE' | 'UNLOCKED' | 'LOCKED' | 'BROKEN' | 'WEB_LOCKED';
   sideLockTriggerTime?: string;
   vehicleSpeed: number; // km/h
   motorRPM: number;
@@ -39,6 +39,12 @@ export interface TelemetryData {
   gpsAccuracy: number; // meters
   heading: number; // degrees
   satelliteCount: number;
+  satellites?: number;
+  sentTime?: number;
+  mobilization?: boolean;
+  motorStatus?: string;
+  motorSpeedPercent?: number;
+  latency?: number;
   lastGpsUpdate: string;
 
   // Operational Latency & Commands

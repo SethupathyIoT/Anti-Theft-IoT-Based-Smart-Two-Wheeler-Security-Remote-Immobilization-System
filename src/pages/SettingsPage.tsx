@@ -20,6 +20,11 @@ export const SettingsPage: React.FC = () => {
   const [isUpdatingOta, setIsUpdatingOta] = useState(false);
   const [otaProgress, setOtaProgress] = useState(0);
 
+  // Sync local form data when settings arrive from Firebase
+  React.useEffect(() => {
+    setFormData(settings);
+  }, [settings]);
+
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     updateSettings(formData);

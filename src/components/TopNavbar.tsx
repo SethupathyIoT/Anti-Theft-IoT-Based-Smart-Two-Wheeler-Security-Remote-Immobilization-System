@@ -52,19 +52,11 @@ export const TopNavbar: React.FC = () => {
           </span>
         </div>
 
-        {/* Live Simulator Toggle Switch */}
-        <button
-          onClick={toggleSimulator}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
-            isSimulatorActive 
-              ? 'bg-blue-600/20 border-blue-500/40 text-blue-400' 
-              : 'bg-emerald-600/20 border-emerald-500/40 text-emerald-400'
-          }`}
-          title="Switch between Live Telemetry Simulator and Firebase RTDB Sync"
-        >
-          <Radio className={`w-3.5 h-3.5 ${isSimulatorActive ? 'animate-pulse text-blue-400' : 'text-emerald-400'}`} />
-          <span>{isSimulatorActive ? 'Telemetry Stream: Active' : 'Firebase RTDB: Connected'}</span>
-        </button>
+        {/* Live Real Hardware Connection Badge */}
+        <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold border bg-emerald-600/10 border-emerald-500/30 text-emerald-400">
+          <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+          <span>Firebase RTDB: Real Hardware Stream</span>
+        </div>
       </div>
 
       {/* Right Side Tools & Controls */}

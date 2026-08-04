@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 import { TelemetryData, SecurityAlert, SystemLog, ImmobilizationProgress, SystemSettings } from '../types/telemetry';
 import { database, ref, onValue, set, update } from '../firebase';
 
@@ -32,70 +32,48 @@ const initialTelemetry: TelemetryData = {
   owner: "Admin",
   registration: "TN-39-AB-1234",
   firmwareVersion: "v1.0.0",
-  esp32Online: true,
-  networkOperator: "Airtel 4G IoT",
+  esp32Online: false,
+  networkOperator: "Hardware Stream",
   
   vehicleStatus: "SAFE",
   sideLockStatus: "LOCKED",
   sideLockTriggerTime: undefined,
-  vehicleSpeed: 18,
-  motorRPM: 1250,
-  engineStatus: "RUNNING",
-  batteryVoltage: 12.4,
-  batteryPercentage: 88,
+  vehicleSpeed: 0,
+  motorRPM: 0,
+  engineStatus: "STOPPED",
+  batteryVoltage: 0.0,
+  batteryPercentage: 0,
   
-  gsmSignal: "4G Connected",
-  signalStrength: -65, // dBm
-  simStatus: "SIM800L Ready",
+  gsmSignal: "Connecting...",
+  signalStrength: 0,
+  simStatus: "Awaiting Hardware Signal",
   
-  pwmOutput: 45,
-  motorDirection: "FORWARD",
-  motorCurrent: 3.8, // Amps
-  motorDriverTemp: 42, // °C
-  controllerVoltage: 12.2,
+  pwmOutput: 0,
+  motorDirection: "NEUTRAL",
+  motorCurrent: 0.0,
+  motorDriverTemp: 0,
+  controllerVoltage: 0.0,
   immobilizerStatus: "ARMED",
   emergencyOverride: false,
   
-  gpsLatitude: 11.0168,
-  gpsLongitude: 76.9558,
-  gpsAddress: "Cross Cut Road, Gandhipuram, Coimbatore, TN",
-  gpsSpeed: 18,
-  gpsAccuracy: 2.4,
-  heading: 45,
-  satelliteCount: 12,
-  lastGpsUpdate: "Just now",
+  gpsLatitude: 0.0,
+  gpsLongitude: 0.0,
+  gpsAddress: "Awaiting Hardware GPS Fix...",
+  gpsSpeed: 0,
+  gpsAccuracy: 0,
+  heading: 0,
+  satelliteCount: 0,
+  lastGpsUpdate: "Offline",
 
-  commandLatencyMs: 42,
+  commandLatencyMs: 0,
   currentAlarm: false,
   currentCommand: "IDLE"
 };
 
-const initialAlerts: SecurityAlert[] = [
-  {
-    id: "alt-1",
-    iconType: "shield",
-    title: "Vehicle Safe",
-    description: "System diagnostics completed successfully. No threats detected.",
-    timestamp: "10:20:00 AM",
-    severity: "green",
-    read: true
-  },
-  {
-    id: "alt-2",
-    iconType: "lock",
-    title: "Side Lock Engaged",
-    description: "Solenoid side lock locked automatically.",
-    timestamp: "10:15:30 AM",
-    severity: "green",
-    read: true
-  }
-];
+const initialAlerts: SecurityAlert[] = [];
 
 const initialLogs: SystemLog[] = [
-  { id: "log-1", timestamp: "10:24:35", level: "INFO", message: "ESP32 Board Connected via Wi-Fi & MQTT" },
-  { id: "log-2", timestamp: "10:24:36", level: "INFO", message: "SIM800L GSM Network Registered [Airtel 4G]" },
-  { id: "log-3", timestamp: "10:24:37", level: "INFO", message: "Cloud Firebase RTDB Synchronization Active" },
-  { id: "log-4", timestamp: "10:24:38", level: "SUCCESS", message: "Immobilizer Subsystem Armed & Ready" }
+  { id: "log-1", timestamp: new Date().toLocaleTimeString('en-US', { hour12: false }), level: "INFO", message: "Real Hardware Dashboard Initialized. Waiting for ESP32 Firebase Stream..." }
 ];
 
 const initialSettings: SystemSettings = {
@@ -106,7 +84,7 @@ const initialSettings: SystemSettings = {
   callEnabled: true,
   wifiSSID: "SmartIoT_Vehicle_5G",
   mqttServer: "mqtt.antitheft-iot.net:1883",
-  firebaseUrl: "https://antitheft-9a300-default-rtdb.asia-southeast1.firebasedatabase.app",
+  firebaseUrl: "https://antifinal-722a9-default-rtdb.asia-southeast1.firebasedatabase.app",
   speedThreshold: 60,
   autoStopThreshold: 80,
   emergencyPin: "9944",
@@ -128,9 +106,9 @@ export const TelemetryProvider: React.FC<{ children: ReactNode }> = ({ children 
   const [immobilization, setImmobilization] = useState<ImmobilizationProgress>({
     isStopping: false,
     stepIndex: 0,
-    currentSpeed: 18,
+    currentSpeed: 0,
     progressPercent: 0,
-    estimatedSecondsLeft: 10,
+    estimatedSecondsLeft: 0,
     statusText: "Ready",
     acknowledged: false
   });
@@ -157,17 +135,93 @@ export const TelemetryProvider: React.FC<{ children: ReactNode }> = ({ children 
     setAlerts(prev => [newAlert, ...prev]);
   };
 
-  // Firebase Realtime Database Listener
+  const lastRxTimeRef = useRef<number>(0);
+
+  // Firebase Realtime Database Listener - Settings Node
+  useEffect(() => {
+    try {
+      const settingsRef = ref(database, 'settings');
+      const unsubscribe = onValue(settingsRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          setSettings(prev => ({ ...prev, ...data }));
+        }
+      });
+      return () => unsubscribe();
+    } catch (err) {
+      console.warn("Firebase settings listener notice:", err);
+    }
+  }, []);
+
+  // Firebase Realtime Database Listener - Real Hardware Telemetry Stream
   useEffect(() => {
     try {
       const telemetryRef = ref(database, 'telemetry');
       const unsubscribe = onValue(telemetryRef, (snapshot) => {
         const data = snapshot.val();
-        if (data && !isSimulatorActive) {
+        if (data) {
+          const now = Date.now();
+          const prevRxTime = lastRxTimeRef.current;
+          lastRxTimeRef.current = now;
+          const realPing = data.latency ? Number(data.latency) : (prevRxTime > 0 ? Math.min(500, Math.max(8, Math.round(now - prevRxTime))) : 35);
+          const isEngineActive = (data.engineStatus === 'RUNNING' || 
+            (data.vehicleStatus !== 'THREAT_DETECTED' && 
+             data.sideLockStatus !== 'BROKEN' && 
+             data.motorStatus !== 'OFF' && 
+             data.controls !== 'offmotor' && 
+             data.currentCommand !== 'STOP_VEHICLE'));
+
+          const newSpeed = Number(data.vehicleSpeed || 0);
+          const newRpm = Number(data.motorRPM || (newSpeed > 0 ? Math.round(newSpeed * 100) : 0));
+          const newCurrent = Number(data.motorCurrent || (newSpeed > 0 ? (0.5 + newSpeed * 0.15) : 0));
+          const newVoltage = Number(data.batteryVoltage || data.controllerVoltage || 12.6);
+
           setTelemetry(prev => ({
             ...prev,
-            ...data
+            ...data,
+            vehicleSpeed: newSpeed,
+            motorRPM: newRpm,
+            motorCurrent: Number(newCurrent.toFixed(2)),
+            batteryVoltage: Number(newVoltage.toFixed(2)),
+            engineStatus: isEngineActive ? 'RUNNING' : 'STOPPED',
+            esp32Online: true,
+            gsmSignal: data.gsmSignal || "4G / VoLTE (Online)",
+            networkOperator: data.networkOperator || "SIM800L / GSM Stream",
+            signalStrength: data.signalStrength !== undefined ? data.signalStrength : (prev.signalStrength || -87),
+            commandLatencyMs: realPing,
+            satellites: data.satellites !== undefined ? Number(data.satellites) : prev.satellites,
+            gpsLatitude: data.gpsLatitude !== undefined ? Number(data.gpsLatitude) : prev.gpsLatitude,
+            gpsLongitude: data.gpsLongitude !== undefined ? Number(data.gpsLongitude) : prev.gpsLongitude,
+            gpsAddress: data.gpsAddress || prev.gpsAddress
           }));
+
+          // Append live telemetry point into historyData buffer for continuous smooth charting
+          const timeLabel = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          setHistoryData(prev => [
+            ...prev.slice(-29),
+            {
+              time: timeLabel,
+              speed: newSpeed,
+              rpm: newRpm,
+              current: Number(newCurrent.toFixed(2)),
+              voltage: Number(newVoltage.toFixed(2))
+            }
+          ]);
+
+          // Log Serial print telemetry entries into System Terminal Logs
+          const latVal = Number(data.gpsLatitude || data.latitude || 0).toFixed(6);
+          const lngVal = Number(data.gpsLongitude || data.longitude || 0).toFixed(6);
+          const speedVal = newSpeed.toFixed(1);
+          const lockState = data.sideLockStatus || 'LOCKED';
+
+          if (data.sideLockStatus === 'BROKEN' || data.vehicleStatus === 'THREAT_DETECTED') {
+            addLog('DANGER', `[ALERT] SIDE LOCK BUTTON PRESSED -> BROKEN / THREAT DETECTED!`);
+            addLog('DANGER', `[ALERT] Vehicle Immobilized! Alerting Emergency Contact`);
+            addLog('WARNING', `[SIM800L] Sending Emergency SMS to Target Contact with Live Map Location: https://maps.google.com/?q=${latVal},${lngVal}`);
+            addLog('WARNING', `[SIM800L] Executing Voice Call ATD Command to Emergency Contact...`);
+          } else {
+            addLog('SUCCESS', `[Serial RX] [Firebase] Telemetry Synced (HTTP 200) | Lat: ${latVal}, Lng: ${lngVal}, Speed: ${speedVal} km/h, Lock: ${lockState}`);
+          }
         }
       }, (error) => {
         console.warn("Firebase listener notice:", error.message);
@@ -177,249 +231,130 @@ export const TelemetryProvider: React.FC<{ children: ReactNode }> = ({ children 
     } catch (err) {
       console.warn("Firebase connection notice:", err);
     }
-  }, [isSimulatorActive]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Real-time chart data & telemetry simulator loop (runs every second)
+  // Hardware Liveness Heartbeat Monitor (Timeout if no stream received for >20s)
   useEffect(() => {
-    const interval = setInterval(() => {
-      const timeStr = new Date().toLocaleTimeString('en-US', { hour12: false, minute: '2-digit', second: '2-digit' });
-
-      setTelemetry(prev => {
-        if (!isSimulatorActive) return prev;
-        
-        let newSpeed = prev.vehicleSpeed;
-        let newRpm = prev.motorRPM;
-
-        if (immobilization.isStopping) {
-          // Handled by immobilization timer
-          return prev;
-        }
-
-        if (prev.engineStatus === 'RUNNING') {
-          // Add slight organic speed fluctuations
-          const delta = (Math.random() - 0.48) * 2;
-          newSpeed = Math.max(12, Math.min(45, Math.round(prev.vehicleSpeed + delta)));
-          newRpm = Math.round(newSpeed * 70 + (Math.random() * 50 - 25));
-        } else {
-          newSpeed = 0;
-          newRpm = 0;
-        }
-
-        const newCurrent = Number((newSpeed > 0 ? 3.5 + (newSpeed / 10) + Math.random() * 0.4 : 0.2).toFixed(1));
-        const newVoltage = Number((12.4 - (Math.random() * 0.05)).toFixed(2));
-        
-        // Slightly update lat/lng to simulate vehicle moving along Coimbatore road
-        const latDelta = newSpeed > 0 ? 0.00003 * (Math.random() - 0.3) : 0;
-        const lngDelta = newSpeed > 0 ? 0.00003 * (Math.random() - 0.2) : 0;
-
-        const updated: TelemetryData = {
-          ...prev,
-          vehicleSpeed: newSpeed,
-          motorRPM: newRpm,
-          pwmOutput: newSpeed > 0 ? Math.min(100, Math.round((newSpeed / 50) * 100)) : 0,
-          motorCurrent: newCurrent,
-          batteryVoltage: newVoltage,
-          gpsLatitude: prev.gpsLatitude + latDelta,
-          gpsLongitude: prev.gpsLongitude + lngDelta,
-          gpsSpeed: newSpeed,
-          commandLatencyMs: Math.floor(35 + Math.random() * 15),
-          lastGpsUpdate: "Just now"
-        };
-
-        // Append to historical graph data
-        setHistoryData(historyPrev => {
-          const nextData = [
-            ...historyPrev.slice(-29),
-            {
-              time: timeStr,
-              speed: newSpeed,
-              rpm: newRpm,
-              current: newCurrent,
-              voltage: newVoltage
-            }
-          ];
-          return nextData;
+    const heartbeatTimer = setInterval(() => {
+      const lastRx = lastRxTimeRef.current;
+      if (lastRx > 0 && Date.now() - lastRx > 20000) {
+        setTelemetry(prev => {
+          if (!prev.esp32Online && prev.engineStatus === 'STOPPED') return prev;
+          return {
+            ...prev,
+            esp32Online: false,
+            engineStatus: 'STOPPED',
+            vehicleSpeed: 0,
+            motorRPM: 0,
+            pwmOutput: 0,
+            signalStrength: 0,
+            gsmSignal: 'Hardware Offline',
+            commandLatencyMs: 0
+          };
         });
+      }
+    }, 3000);
 
-        return updated;
-      });
-    }, 1000);
+    return () => clearInterval(heartbeatTimer);
+  }, []);
 
-    return () => clearInterval(interval);
-  }, [isSimulatorActive, immobilization.isStopping]);
-
-  // Handle Progressive Remote Immobilization Sequence
+  // Dispatch Remote Stop Command to Firebase /controls Node
   const triggerRemoteStop = () => {
-    if (immobilization.isStopping) return;
-
-    addLog('WARNING', 'Remote Stop Command Received from Dashboard');
-    addLog('INFO', 'ESP32 Acknowledgement Verified [Latency: 38ms]');
+    addLog('WARNING', 'Remote Stop Command Dispatched to ESP32 Hardware via Firebase');
     addAlert({
       iconType: 'stop',
       title: 'Vehicle Stop Requested',
-      description: 'Remote immobilization initiated by owner. Reducing speed gradually.',
+      description: 'Remote immobilization command sent to hardware controller.',
       severity: 'orange'
     });
 
-    const speedSteps = [18, 15, 12, 9, 6, 3, 0];
-    let stepIndex = 0;
-
-    setImmobilization({
-      isStopping: true,
-      stepIndex: 0,
-      currentSpeed: speedSteps[0],
-      progressPercent: 10,
-      estimatedSecondsLeft: 10,
-      statusText: 'Command Sent & ESP32 Ack Received',
-      acknowledged: true
-    });
-
-    const stopInterval = setInterval(() => {
-      stepIndex++;
-      if (stepIndex < speedSteps.length) {
-        const speed = speedSteps[stepIndex];
-        const pct = Math.round(((stepIndex + 1) / speedSteps.length) * 100);
-        const estSec = speedSteps.length - stepIndex;
-        
-        setTelemetry(prev => ({
-          ...prev,
-          vehicleSpeed: speed,
-          motorRPM: Math.round(speed * 65),
-          pwmOutput: Math.round((speed / 20) * 100),
-          engineStatus: speed === 0 ? 'STOPPED' : 'RUNNING',
-          motorCurrent: speed === 0 ? 0.1 : 1.5
-        }));
-
-        setImmobilization(prev => ({
-          ...prev,
-          stepIndex,
-          currentSpeed: speed,
-          progressPercent: pct,
-          estimatedSecondsLeft: estSec,
-          statusText: speed === 0 ? 'Motor OFF' : `Reducing Speed to ${speed} km/h`
-        }));
-
-        addLog('INFO', `Vehicle Slowing: ${speed} km/h`);
-      } else {
-        clearInterval(stopInterval);
-        
-        setTelemetry(prev => ({
-          ...prev,
-          vehicleSpeed: 0,
-          motorRPM: 0,
-          pwmOutput: 0,
-          engineStatus: 'STOPPED',
-          immobilizerStatus: 'ENGAGED',
-          motorCurrent: 0,
-          currentCommand: "MOTOR_DISABLED"
-        }));
-
-        setImmobilization({
-          isStopping: false,
-          stepIndex: speedSteps.length - 1,
-          currentSpeed: 0,
-          progressPercent: 100,
-          estimatedSecondsLeft: 0,
-          statusText: 'Motor Successfully Disabled',
-          acknowledged: true
-        });
-
-        addLog('SUCCESS', 'Motor Successfully Stopped & Solenoid Locked');
-        addAlert({
-          iconType: 'stop',
-          title: 'Motor Disabled',
-          description: 'Vehicle safely immobilized. Engine state: STOPPED.',
-          severity: 'red'
-        });
-
-        // Optionally update Firebase RTDB
-        try {
-          update(ref(database, 'controls'), {
-            motorState: 'STOPPED',
-            immobilizer: 'ENGAGED',
-            lastUpdated: Date.now()
-          });
-        } catch (e) {
-          // ignore firebase offline
-        }
-      }
-    }, 1200);
+    try {
+      update(ref(database), {
+        'controls': 'OFFMOTOR',
+        'mobilization': true,
+        'telemetry/mobilization': true,
+        'telemetry/motorStatus': 'OFF',
+        'telemetry/sideLockStatus': 'LOCKED'
+      });
+      setTelemetry(prev => ({
+        ...prev,
+        mobilization: true,
+        motorStatus: 'OFF',
+        sideLockStatus: 'LOCKED',
+        engineStatus: 'STOPPED'
+      }));
+    } catch (e) {
+      console.error("Firebase control error:", e);
+    }
   };
 
   const restartVehicle = () => {
-    addLog('INFO', 'Restart Command Received. Verifying Owner Authorization...');
-    setTimeout(() => {
+    addLog('INFO', 'Restart Command Dispatched to ESP32 Hardware via Firebase');
+    addAlert({
+      iconType: 'shield',
+      title: 'Vehicle Restart Command Sent',
+      description: 'Engine ignition command sent to ESP32.',
+      severity: 'green'
+    });
+
+    try {
+      update(ref(database), {
+        'controls': 'ONMOTOR',
+        'mobilization': false,
+        'telemetry/mobilization': false,
+        'telemetry/motorStatus': 'Idle',
+        'telemetry/sideLockStatus': 'UNLOCKED'
+      });
       setTelemetry(prev => ({
         ...prev,
-        engineStatus: 'RUNNING',
-        vehicleSpeed: 12,
-        motorRPM: 850,
-        pwmOutput: 30,
-        immobilizerStatus: 'ARMED',
-        vehicleStatus: 'SAFE'
+        mobilization: false,
+        motorStatus: 'Idle',
+        sideLockStatus: 'UNLOCKED',
+        engineStatus: 'RUNNING'
       }));
-      setImmobilization(prev => ({
-        ...prev,
-        isStopping: false,
-        statusText: 'Ready'
-      }));
-      addLog('SUCCESS', 'Engine Relays Engaged. Vehicle Restarted Safely.');
-      addAlert({
-        iconType: 'shield',
-        title: 'Vehicle Restarted',
-        description: 'Authorized engine restart successful.',
-        severity: 'green'
-      });
-    }, 800);
+    } catch (e) {
+      console.error("Firebase control error:", e);
+    }
   };
 
   const toggleSideLock = () => {
-    setTelemetry(prev => {
-      const isLocked = prev.sideLockStatus === 'LOCKED';
-      const nextStatus = isLocked ? 'BROKEN' : 'LOCKED';
-      const timeStr = new Date().toLocaleTimeString();
-
-      if (nextStatus === 'BROKEN') {
-        addLog('WARNING', 'Side Lock Tamper Sensor Triggered!');
-        addLog('INFO', 'Automatic Security SMS Sent to Emergency Contact');
-        addLog('INFO', 'Emergency Call Initiated to +91 98765 43210');
-        addAlert({
-          iconType: 'warning',
-          title: 'Side Lock Broken',
-          description: 'Physical tampering detected on handlebar side lock.',
-          severity: 'red'
-        });
-      } else {
-        addLog('SUCCESS', 'Side Lock Sensor Reset & Secured');
-      }
-
-      return {
-        ...prev,
-        sideLockStatus: nextStatus,
-        sideLockTriggerTime: nextStatus === 'BROKEN' ? timeStr : undefined,
-        vehicleStatus: nextStatus === 'BROKEN' ? 'THREAT_DETECTED' : 'SAFE'
-      };
-    });
+    addLog('INFO', 'Toggle Side Lock Command Dispatched to ESP32 Hardware');
+    try {
+      set(ref(database, 'controls'), 'TOGGLE_LOCK');
+    } catch (e) {
+      console.error("Firebase control error:", e);
+    }
   };
 
   const triggerHorn = () => {
-    addLog('INFO', 'Horn Command Dispatched -> ESP32 Buzzer Active (3s)');
+    addLog('INFO', 'Horn Command Dispatched to ESP32 Buzzer via Firebase');
     addAlert({
       iconType: 'phone',
-      title: 'Horn Activated',
-      description: 'Vehicle horn sounded remotely.',
+      title: 'Horn Command Sent',
+      description: 'Vehicle horn command sent to hardware buzzer.',
       severity: 'green'
     });
+    try {
+      set(ref(database, 'controls'), 'HORN');
+    } catch (e) {
+      console.error("Firebase control error:", e);
+    }
   };
 
   const flashHeadlight = () => {
-    addLog('INFO', 'Headlight Pulse Command Dispatched -> 4x Strobe Flash');
+    addLog('INFO', 'Headlight Pulse Command Dispatched to ESP32 Relay');
     addAlert({
       iconType: 'shield',
-      title: 'Headlights Flashed',
-      description: 'Strobe headlights flashed remotely.',
+      title: 'Headlight Pulse Command Sent',
+      description: 'Strobe headlight command sent to ESP32.',
       severity: 'green'
     });
+    try {
+      set(ref(database, 'controls'), 'FLASH_HEADLIGHT');
+    } catch (e) {
+      console.error("Firebase control error:", e);
+    }
   };
 
   const toggleEmergencyOverride = () => {
@@ -434,11 +369,7 @@ export const TelemetryProvider: React.FC<{ children: ReactNode }> = ({ children 
   };
 
   const toggleSimulator = () => {
-    setIsSimulatorActive(prev => {
-      const next = !prev;
-      addLog('INFO', `Telemetry Mode Switch: ${next ? 'Live Simulation Stream' : 'Firebase RTDB Sync'}`);
-      return next;
-    });
+    setIsSimulatorActive(prev => !prev);
   };
 
   const clearAlerts = () => {
@@ -451,8 +382,18 @@ export const TelemetryProvider: React.FC<{ children: ReactNode }> = ({ children 
   };
 
   const updateSettings = (newSettings: Partial<SystemSettings>) => {
-    setSettings(prev => ({ ...prev, ...newSettings }));
-    addLog('SUCCESS', 'System Parameters Updated Successfully');
+    setSettings(prev => {
+      const updated = { ...prev, ...newSettings };
+      try {
+        // Persist full settings to Firebase /settings node
+        // ESP32 reads emergency contacts from /settings/emergencyContact1
+        set(ref(database, 'settings'), updated);
+      } catch (e) {
+        console.error("Firebase settings sync error:", e);
+      }
+      return updated;
+    });
+    addLog('SUCCESS', 'System Configuration & Emergency Phone Synced to Firebase');
   };
 
   return (

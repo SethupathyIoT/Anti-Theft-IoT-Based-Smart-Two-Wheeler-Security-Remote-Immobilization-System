@@ -22,7 +22,7 @@ const esp32CodeSnippet = `/*
 
 const char* WIFI_SSID     = "YOUR_WIFI_SSID";
 const char* WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";
-const char* FIREBASE_HOST = "https://antitheft-9a300-default-rtdb.asia-southeast1.firebasedatabase.app";
+const char* FIREBASE_HOST = "https://antifinal-722a9-default-rtdb.asia-southeast1.firebasedatabase.app";
 const char* EMERGENCY_PHONE = "+919876543210";
 
 #define PIN_L298N_ENA       18
@@ -88,11 +88,9 @@ export const Esp32Page: React.FC = () => {
     { component: 'TTP223 Touch Sensor SIG', espPin: 'GPIO 4', type: 'Digital Interrupt (RISING)', desc: 'Handlebar Touch Tamper Trigger' },
     { component: 'NEO-6M-V2 GPS Module (RX1/TX1)', espPin: 'GPIO 32 / 33', type: 'HardwareSerial1', desc: 'Parses Live NMEA Satellite Coordinates' },
     { component: '12V DC Adapter Voltage Divider', espPin: 'GPIO 36 (VP)', type: 'ADC1_CH0 Analog Input', desc: '10k/3.3k Divider for 12V Main Power Voltage' },
-    { component: 'Ignition Cutoff Relay', espPin: 'GPIO 23', type: 'Digital Output Relay', desc: 'High = Ignition Active / Low = Immobilized' },
-    { component: 'Side Lock Solenoid Relay', espPin: 'GPIO 22', type: 'Digital Output Relay', desc: 'High = Handlebar Solenoid Lock Engaged' },
-    { component: 'Piezo Horn / Buzzer', espPin: 'GPIO 25', type: 'Digital Output', desc: '3-Second Alarm Buzzer Sounder' },
-    { component: 'Strobe Headlight Relay', espPin: 'GPIO 26', type: 'Digital Output Relay', desc: '4x Flasher Strobe Relay' },
-    { component: 'SIM800L GSM Module (RX2/TX2)', espPin: 'GPIO 16 / 17', type: 'HardwareSerial2', desc: 'GSM AT Commands, Emergency SMS & Voice Calls' },
+    {component: 'Ignition Cutoff Relay', espPin: 'GPIO 23', type: 'Digital Output Relay', desc: 'High = Ignition Active / Low = Immobilized' },
+    {component: 'Side Lock Solenoid Relay', espPin: 'GPIO 22', type: 'Digital Output Relay', desc: 'High = Handlebar Solenoid Lock Engaged' },
+    {component: 'SIM800L GSM Module (RX2/TX2)', espPin: 'GPIO 16 / 17', type: 'HardwareSerial2', desc: 'GSM AT Commands, Emergency SMS & Voice Calls' },
   ];
 
   return (

@@ -16,6 +16,10 @@ import { ProfilePage } from './pages/ProfilePage';
 const AppContent: React.FC = () => {
   const { activeTab, setActiveTab } = useTelemetry();
 
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [activeTab]);
+
   const renderCurrentTab = () => {
     switch (activeTab) {
       case 'home':

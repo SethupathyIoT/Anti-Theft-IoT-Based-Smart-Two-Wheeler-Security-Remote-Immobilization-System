@@ -24,59 +24,33 @@ interface HistoryEvent {
   status: string;
 }
 
-const mockHistoryEvents: HistoryEvent[] = [
-  {
-    id: "evt-101",
-    date: "2026-07-26",
-    time: "10:24:55",
-    type: "Remote Immobilization",
-    description: "Motor successfully stopped via dashboard remote command.",
-    location: "Gandhipuram, Coimbatore",
-    status: "Completed"
-  },
-  {
-    id: "evt-102",
-    date: "2026-07-26",
-    time: "10:24:36",
-    type: "Side Lock Tamper",
-    description: "Handlebar solenoid side lock tamper switch triggered.",
-    location: "Gandhipuram, Coimbatore",
-    status: "Alert Triggered"
-  },
-  {
-    id: "evt-103",
-    date: "2026-07-26",
-    time: "10:24:37",
-    type: "SMS Notification",
-    description: "Emergency SMS broadcast sent to +91 98765 43210.",
-    location: "Cloud SIM800L Gateway",
-    status: "Delivered"
-  },
-  {
-    id: "evt-104",
-    date: "2026-07-25",
-    time: "18:40:12",
-    type: "Engine Started",
-    description: "Engine ignition authorized via RFID key tag.",
-    location: "Cross Cut Road, Coimbatore",
-    status: "Authorized"
-  },
-  {
-    id: "evt-105",
-    date: "2026-07-25",
-    time: "17:15:00",
-    type: "Geofence Check",
-    description: "Vehicle within safe designated geofence radius.",
-    location: "RS Puram, Coimbatore",
-    status: "Safe"
-  }
-];
-
 export const HistoryPage: React.FC = () => {
+  const { alerts, logs, telemetry } = useTelemetry();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('ALL');
 
-  const filteredEvents = mockHistoryEvents.filter(evt => {
+  const realEvents: HistoryEvent[] = [
+    ...alerts.map(a => ({
+      id: a.id,
+      date: new Date().toISOString().split('T')[0],
+      time: a.timestamp,
+      type: a.title,
+      description: a.description,
+      location: telemetry.gpsAddress || "Hardware GPS",
+      status: a.severity.toUpperCase()
+    })),
+    ...logs.map(l => ({
+      id: l.id,
+      date: new Date().toISOString().split('T')[0],
+      time: l.timestamp,
+      type: l.level,
+      description: l.message,
+      location: "ESP32 Hardware",
+      status: l.level === 'SUCCESS' ? 'SUCCESS' : l.level === 'DANGER' ? 'ALERT' : 'INFO'
+    }))
+  ];
+
+  const filteredEvents = realEvents.filter(evt => {
     const matchesSearch = evt.description.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           evt.type.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = filterType === 'ALL' || evt.type.toUpperCase().includes(filterType);
