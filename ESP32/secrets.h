@@ -23,6 +23,6 @@
 // Emergency fallback phone number (only used if Firebase fetch fails)
 // Format: international with + prefix, e.g. "+919876543210"
 // Leave empty ("") to disable fallback and skip alert if fetch fails.
-#define EMERGENCY_PHONE_FALLBACK "+919043410887"
+#define EMERGENCY_PHONE_FALLBACK "+91 xxxxx xxxxx"
 
 #endif // SECRETS_H
