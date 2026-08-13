@@ -2,16 +2,15 @@ import { initializeApp } from "firebase/app";
 import { getDatabase, ref, onValue, set, update } from "firebase/database";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDonoY5JLmED-sJQDaVktYSAs_TftjN-nA",
-  authDomain: "antifinal-722a9.firebaseapp.com",
-  databaseURL: "https://antifinal-722a9-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "antifinal-722a9",
-  storageBucket: "antifinal-722a9.firebasestorage.app",
-  messagingSenderId: "266664137227",
-  appId: "1:266664137227:web:9e9d3d195f35e794fbad0e"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
