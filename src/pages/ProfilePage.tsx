@@ -61,9 +61,13 @@ export const ProfilePage: React.FC = () => {
           <div className="space-y-3 text-xs">
             <div className="flex justify-between py-1.5 border-b border-[#1E2D4A]/40">
               <span className="text-slate-400">Board Status:</span>
-              <span className="text-emerald-400 font-bold flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                Online & Connected
+              <span className={`font-bold flex items-center gap-1 ${
+                telemetry.esp32Online ? 'text-emerald-400' : 'text-red-400'
+              }`}>
+                <span className={`w-2 h-2 rounded-full ${
+                  telemetry.esp32Online ? 'bg-emerald-400 animate-ping' : 'bg-red-400'
+                }`}></span>
+                {telemetry.esp32Online ? 'Online & Connected' : 'Hardware Offline'}
               </span>
             </div>
             <div className="flex justify-between py-1.5 border-b border-[#1E2D4A]/40">
@@ -74,13 +78,9 @@ export const ProfilePage: React.FC = () => {
               <span className="text-slate-400">Local IP:</span>
               <span className="font-mono text-blue-400">192.168.1.104</span>
             </div>
-            <div className="flex justify-between py-1.5 border-b border-[#1E2D4A]/40">
+            <div className="flex justify-between py-1.5">
               <span className="text-slate-400">Flash Memory:</span>
               <span className="font-mono text-slate-300">4 MB Dual SPI</span>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <span className="text-slate-400">System Uptime:</span>
-              <span className="font-mono text-slate-300">48 hrs 12 mins</span>
             </div>
           </div>
         </div>
@@ -101,13 +101,9 @@ export const ProfilePage: React.FC = () => {
               <span className="text-slate-400">Signal RSSI:</span>
               <span className="font-mono text-purple-400 font-bold">{telemetry.signalStrength} dBm (Excellent)</span>
             </div>
-            <div className="flex justify-between py-1.5 border-b border-[#1E2D4A]/40">
+            <div className="flex justify-between py-1.5">
               <span className="text-slate-400">SIM ICCID:</span>
               <span className="font-mono text-slate-400 text-[10px]">8991400038291048102F</span>
-            </div>
-            <div className="flex justify-between py-1.5">
-              <span className="text-slate-400">Last Synced:</span>
-              <span className="font-mono text-emerald-400">Just now</span>
             </div>
           </div>
         </div>

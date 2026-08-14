@@ -6,23 +6,25 @@ import {
   Unlock, 
   Gauge, 
   Zap, 
-  BatteryCharging, 
   Signal, 
   AlertTriangle 
 } from 'lucide-react';
 import { useTelemetry } from '../context/TelemetryContext';
 
 export const StatusCardsRow: React.FC = () => {
-  const { telemetry, toggleSideLock } = useTelemetry();
+  const { telemetry } = useTelemetry();
 
-  const isThreat = telemetry.vehicleStatus === 'THREAT_DETECTED';
+  const isThreat = telemetry.vehicleStatus === 'THREAT_DETECTED' || telemetry.sideLockStatus === 'BROKEN';
   const isLockBroken = telemetry.sideLockStatus === 'BROKEN';
+  const isUnlocked = telemetry.sideLockStatus === 'UNLOCKED';
   const isEngineRunning = telemetry.engineStatus === 'RUNNING';
+
+  const displayLockStatus = isLockBroken ? 'BROKEN' : isUnlocked ? 'UNLOCKED' : 'SAFE';
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-6">
       {/* Card 1: Vehicle Security Status */}
-      <div className={`glass-card p-4 flex flex-col justify-between relative overflow-hidden ${
+      <div className={`glass-card p-4 flex flex-col justify-between relative overflow-hidden group hover:-translate-y-1.5 transition-all duration-300 animate-fade-in-up ${
         isThreat ? 'glass-card-danger' : ''
       }`}>
         <div className="flex items-start justify-between">
@@ -34,10 +36,10 @@ export const StatusCardsRow: React.FC = () => {
               {isThreat ? 'THREAT DETECTED' : 'SAFE'}
             </h3>
           </div>
-          <div className={`p-3 rounded-2xl ${
+          <div className={`p-3 rounded-2xl transition-transform duration-300 group-hover:scale-110 ${
             isThreat ? 'bg-red-500/20 text-red-400 glow-red' : 'bg-emerald-500/20 text-emerald-400'
           }`}>
-            {isThreat ? <ShieldAlert className="w-6 h-6" /> : <ShieldCheck className="w-6 h-6" />}
+            {isThreat ? <ShieldAlert className="w-6 h-6 animate-bounce" /> : <ShieldCheck className="w-6 h-6" />}
           </div>
         </div>
         <p className="text-xs text-slate-400 mt-3 font-medium">
@@ -45,41 +47,43 @@ export const StatusCardsRow: React.FC = () => {
         </p>
       </div>
 
-      {/* Card 2: Side Lock Status */}
-      <div className={`glass-card p-4 flex flex-col justify-between relative overflow-hidden ${
+      {/* Card 2: Side Lock Sensor Status */}
+      <div className={`glass-card p-4 flex flex-col justify-between relative overflow-hidden group hover:-translate-y-1.5 transition-all duration-300 animate-fade-in-up ${
         isLockBroken ? 'glass-card-danger' : ''
-      }`}>
+      }`} style={{ animationDelay: '80ms' }}>
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center justify-between w-full">
-              <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Side Lock</span>
+              <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Side Lock Sensor Status</span>
             </div>
             <h3 className={`text-xl font-extrabold mt-1 tracking-tight ${
-              isLockBroken ? 'text-red-400' : 'text-emerald-400'
+              isLockBroken ? 'text-red-400' : isUnlocked ? 'text-amber-400' : 'text-emerald-400'
             }`}>
-              {isLockBroken ? 'BROKEN' : 'LOCKED'}
+              {displayLockStatus}
             </h3>
           </div>
-          <div className={`p-3 rounded-2xl ${
-            isLockBroken ? 'bg-red-500/20 text-red-400 glow-red' : 'bg-emerald-500/20 text-emerald-400'
+          <div className={`p-3 rounded-2xl transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6 ${
+            isLockBroken ? 'bg-red-500/20 text-red-400 glow-red' : isUnlocked ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'
           }`}>
-            {isLockBroken ? <Unlock className="w-6 h-6" /> : <Lock className="w-6 h-6" />}
+            {isLockBroken ? <Unlock className="w-6 h-6" /> : isUnlocked ? <Unlock className="w-6 h-6" /> : <Lock className="w-6 h-6" />}
           </div>
         </div>
         <div className="mt-3">
           {isLockBroken ? (
             <p className="text-[11px] text-red-400 font-semibold flex items-center gap-1">
-              <AlertTriangle className="w-3.5 h-3.5 inline" />
+              <AlertTriangle className="w-3.5 h-3.5 inline animate-pulse" />
               Tamper at {telemetry.sideLockTriggerTime || 'Just now'}
             </p>
+          ) : isUnlocked ? (
+            <p className="text-xs text-amber-400 font-medium">🔓 Solenoid Lock Disengaged</p>
           ) : (
-            <p className="text-xs text-slate-400 font-medium">🔒 Solenoid Lock Engaged</p>
+            <p className="text-xs text-slate-400 font-medium">🔒 Solenoid Lock Secured (Safe)</p>
           )}
         </div>
       </div>
 
       {/* Card 3: Live Vehicle Speed */}
-      <div className="glass-card p-4 flex flex-col justify-between relative overflow-hidden">
+      <div className="glass-card p-4 flex flex-col justify-between relative overflow-hidden group hover:-translate-y-1.5 transition-all duration-300 animate-fade-in-up" style={{ animationDelay: '160ms' }}>
         <div className="flex items-start justify-between">
           <div>
             <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Live Speed</span>
@@ -90,18 +94,18 @@ export const StatusCardsRow: React.FC = () => {
               <span className="text-xs font-bold text-slate-400">km/h</span>
             </div>
           </div>
-          <div className="p-3 rounded-2xl bg-blue-500/20 text-blue-400">
+          <div className="p-3 rounded-2xl bg-blue-500/20 text-blue-400 transition-transform duration-300 group-hover:scale-110">
             <Gauge className="w-6 h-6" />
           </div>
         </div>
-        <p className="text-xs text-slate-400 mt-3 font-medium flex items-center gap-1">
+        <p className="text-xs text-slate-400 mt-3 font-medium flex items-center gap-1.5">
           <span className="w-2 h-2 rounded-full bg-blue-400 animate-ping"></span>
-          Updated every 1s
+          Live Hardware Stream
         </p>
       </div>
 
       {/* Card 4: Engine Status */}
-      <div className="glass-card p-4 flex flex-col justify-between relative overflow-hidden">
+      <div className="glass-card p-4 flex flex-col justify-between relative overflow-hidden group hover:-translate-y-1.5 transition-all duration-300 animate-fade-in-up" style={{ animationDelay: '240ms' }}>
         <div className="flex items-start justify-between">
           <div>
             <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">Engine Status</span>
@@ -111,7 +115,7 @@ export const StatusCardsRow: React.FC = () => {
               {telemetry.engineStatus}
             </h3>
           </div>
-          <div className={`p-3 rounded-2xl ${
+          <div className={`p-3 rounded-2xl transition-transform duration-300 group-hover:scale-110 ${
             isEngineRunning ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'
           }`}>
             <Zap className="w-6 h-6" />
@@ -123,7 +127,7 @@ export const StatusCardsRow: React.FC = () => {
       </div>
 
       {/* Card 5: GSM Signal */}
-      <div className="glass-card p-4 flex flex-col justify-between relative overflow-hidden">
+      <div className="glass-card p-4 flex flex-col justify-between relative overflow-hidden group hover:-translate-y-1.5 transition-all duration-300 animate-fade-in-up" style={{ animationDelay: '320ms' }}>
         <div className="flex items-start justify-between">
           <div>
             <span className="text-xs font-medium text-slate-400 uppercase tracking-wider">GSM Signal</span>
@@ -131,7 +135,7 @@ export const StatusCardsRow: React.FC = () => {
               {telemetry.gsmSignal || "4G / VoLTE (Online)"}
             </h3>
           </div>
-          <div className="p-3 rounded-2xl bg-blue-500/20 text-blue-400">
+          <div className="p-3 rounded-2xl bg-blue-500/20 text-blue-400 transition-transform duration-300 group-hover:scale-110">
             <Signal className="w-6 h-6" />
           </div>
         </div>

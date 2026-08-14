@@ -41,12 +41,15 @@ export const SystemLogsTerminal: React.FC = () => {
       </div>
 
       {/* Terminal Content Body */}
-      <div ref={containerRef} className="flex-1 bg-[#070C14] rounded-xl p-3.5 border border-[#1E2D4A] overflow-y-auto font-mono text-xs space-y-2 select-text">
+      <div ref={containerRef} className="flex-1 bg-[#070C14] rounded-xl p-3.5 border border-[#1E2D4A] overflow-y-auto font-mono text-xs space-y-2 select-text shadow-inner">
         {logs.length === 0 ? (
-          <p className="text-slate-600 text-center py-8">Terminal output stream initialized...</p>
+          <div className="flex items-center justify-center gap-2 text-slate-600 py-8">
+            <span>Terminal output stream initialized...</span>
+            <span className="w-1.5 h-4 bg-emerald-400 animate-pulse"></span>
+          </div>
         ) : (
           logs.map((log) => (
-            <div key={log.id} className="flex items-start gap-3 hover:bg-[#131C2E]/50 p-1 rounded transition-colors">
+            <div key={log.id} className="flex items-start gap-3 hover:bg-[#131C2E]/60 p-1 rounded transition-colors animate-fade-in-up">
               <span className="text-slate-500 text-[11px] whitespace-nowrap">{log.timestamp}</span>
               <div className="text-[10px] uppercase font-semibold">
                 {getLevelBadge(log.level)}

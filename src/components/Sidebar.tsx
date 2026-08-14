@@ -27,15 +27,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
   const unreadAlerts = alerts.filter(a => !a.read).length;
 
   const menuItems = [
-    { id: 'home', label: 'Home (3D Showcase)', icon: Home },
+    { id: 'home', label: 'Home', icon: Home },
     { id: 'dashboard', label: 'Dashboard', icon: Gauge },
     { id: 'live-monitor', label: 'Live Monitor', icon: Activity },
     { id: 'alerts', label: 'Alerts', icon: Bell, badge: unreadAlerts > 0 ? unreadAlerts : null },
-    { id: 'control', label: 'Vehicle Control', icon: Sliders },
     { id: 'analytics', label: 'Analytics', icon: Activity },
     { id: 'history', label: 'History', icon: History },
     { id: 'settings', label: 'Settings', icon: SettingsIcon },
-    { id: 'esp32', label: 'ESP32 Firmware', icon: Cpu },
     { id: 'profile', label: 'Profile', icon: User },
   ];
 
@@ -85,24 +83,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
         })}
       </nav>
 
-      {/* Bottom Logout Button */}
-      <div className="px-3 py-2 border-t border-[#1E2D4A]/60">
-        <button 
-          onClick={() => alert("Logout confirmation prompt triggered.")}
-          className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
-        >
-          <LogOut className="w-4 h-4" />
-          <span>Logout</span>
-        </button>
-      </div>
-
       {/* Bottom Vehicle Information Card */}
       <div className="p-4 m-3 bg-[#131C2E] border border-[#1E2D4A] rounded-2xl">
         <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#1E2D4A]">
           <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Vehicle Profile</span>
-          <span className="flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-            Online
+          <span className={`flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full border ${
+            telemetry.esp32Online 
+              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+              : 'bg-red-500/10 text-red-400 border-red-500/20'
+          }`}>
+            <span className={`w-1.5 h-1.5 rounded-full ${
+              telemetry.esp32Online ? 'bg-emerald-400 animate-ping' : 'bg-red-400'
+            }`}></span>
+            {telemetry.esp32Online ? 'Online' : 'Offline'}
           </span>
         </div>
 

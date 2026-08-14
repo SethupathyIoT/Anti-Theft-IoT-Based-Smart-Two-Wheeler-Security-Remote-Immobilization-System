@@ -81,7 +81,10 @@ export interface ImmobilizationProgress {
 }
 
 export interface SystemSettings {
+  vehicleId?: string;
+  model?: string;
   ownerName: string;
+  registration?: string;
   emergencyContact1: string;
   emergencyContact2: string;
   smsEnabled: boolean;

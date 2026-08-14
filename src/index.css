@@ -108,6 +108,44 @@
   animation: emergencyPulse 1.8s infinite ease-in-out;
 }
 
+/* Card Entrance & Smooth Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes bellShake {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(14deg); }
+  30% { transform: rotate(-12deg); }
+  45% { transform: rotate(10deg); }
+  60% { transform: rotate(-8deg); }
+  75% { transform: rotate(4deg); }
+}
+
+.animate-bell-shake {
+  animation: bellShake 1.8s ease-in-out infinite;
+}
+
+@keyframes borderGlowPulse {
+  0%, 100% { border-color: rgba(59, 130, 246, 0.3); box-shadow: 0 0 15px rgba(59, 130, 246, 0.1); }
+  50% { border-color: rgba(59, 130, 246, 0.6); box-shadow: 0 0 25px rgba(59, 130, 246, 0.25); }
+}
+
+.animate-border-glow {
+  animation: borderGlowPulse 3s ease-in-out infinite;
+}
+
 /* Dark mode overrides for Leaflet map */
 .leaflet-container {
   background-color: #0B1220 !important;

@@ -52,20 +52,6 @@ export const AlertsPage: React.FC = () => {
         {/* Quick Action Triggers */}
         <div className="flex items-center gap-3">
           <button
-            onClick={handleTriggerSms}
-            className="px-3.5 py-2 rounded-xl bg-blue-600/20 border border-blue-500/30 text-blue-400 hover:bg-blue-600/30 text-xs font-bold flex items-center gap-2 transition-all"
-          >
-            <MessageSquare className="w-4 h-4" />
-            <span>Send SMS</span>
-          </button>
-          <button
-            onClick={handleTriggerCall}
-            className="px-3.5 py-2 rounded-xl bg-amber-600/20 border border-amber-500/30 text-amber-400 hover:bg-amber-600/30 text-xs font-bold flex items-center gap-2 transition-all"
-          >
-            <Phone className="w-4 h-4" />
-            <span>Initiate Call</span>
-          </button>
-          <button
             onClick={clearAlerts}
             className="px-3.5 py-2 rounded-xl bg-red-600/20 border border-red-500/30 text-red-400 hover:bg-red-600/30 text-xs font-bold flex items-center gap-2 transition-all"
           >

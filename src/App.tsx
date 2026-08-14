@@ -30,16 +30,12 @@ const AppContent: React.FC = () => {
         return <LiveMonitorPage />;
       case 'alerts':
         return <AlertsPage />;
-      case 'control':
-        return <ControlPage />;
       case 'analytics':
         return <AnalyticsPage />;
       case 'history':
         return <HistoryPage />;
       case 'settings':
         return <SettingsPage />;
-      case 'esp32':
-        return <Esp32Page />;
       case 'profile':
         return <ProfilePage />;
       default:

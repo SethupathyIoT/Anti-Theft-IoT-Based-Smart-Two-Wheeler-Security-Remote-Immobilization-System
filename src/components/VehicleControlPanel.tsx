@@ -133,35 +133,6 @@ export const VehicleControlPanel: React.FC = () => {
         )}
       </div>
 
-      {/* Auxiliary Controls Grid */}
-      <div className="glass-card p-5 space-y-4">
-        <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Remote Action Controls</h4>
-        
-        <div className="grid grid-cols-2 gap-3">
-          {/* Restart Vehicle Button */}
-          <button
-            onClick={restartVehicle}
-            className="p-3 rounded-xl border flex items-center justify-center gap-2 font-bold text-xs transition-all bg-emerald-600/20 border-emerald-500/40 text-emerald-400 hover:bg-emerald-600/30 cursor-pointer"
-          >
-            <RotateCcw className="w-4 h-4" />
-            <span>Restart Motor</span>
-          </button>
-
-          {/* Emergency Override Toggle */}
-          <button
-            onClick={toggleEmergencyOverride}
-            className={`p-3 rounded-xl border flex items-center justify-center gap-2 font-bold text-xs transition-all ${
-              telemetry.emergencyOverride
-                ? 'bg-red-600/20 border-red-500/40 text-red-400'
-                : 'bg-[#0B1220] border-[#1E2D4A] text-slate-300 hover:border-slate-600'
-            }`}
-          >
-            <ShieldAlert className="w-4 h-4" />
-            <span>Override: {telemetry.emergencyOverride ? 'ON' : 'OFF'}</span>
-          </button>
-        </div>
-      </div>
-
       {/* Motor & Controller Diagnostic Telemetry */}
       <div className="grid grid-cols-3 gap-3">
         <div className="glass-card p-3.5">

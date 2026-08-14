@@ -77,11 +77,11 @@ export const TopNavbar: React.FC = () => {
         <div className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="relative p-2.5 rounded-xl bg-[#131C2E] border border-[#1E2D4A] text-slate-300 hover:text-white hover:border-blue-500/50 transition-all"
+            className="relative p-2.5 rounded-xl bg-[#131C2E] border border-[#1E2D4A] text-slate-300 hover:text-white hover:border-blue-500/50 transition-all hover:scale-105 active:scale-95"
           >
-            <Bell className="w-5 h-5" />
+            <Bell className={`w-5 h-5 ${unreadCount > 0 ? 'text-amber-400 animate-bell-shake' : ''}`} />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-[11px] font-bold flex items-center justify-center border-2 border-[#0B1220] animate-pulse">
+              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-white text-[11px] font-bold flex items-center justify-center border-2 border-[#0B1220] animate-pulse shadow-md shadow-red-500/50">
                 {unreadCount}
               </span>
             )}
@@ -142,15 +142,6 @@ export const TopNavbar: React.FC = () => {
             </div>
           )}
         </div>
-
-        {/* Dark Mode Toggle */}
-        <button
-          onClick={() => setDarkMode(!darkMode)}
-          className="p-2.5 rounded-xl bg-[#131C2E] border border-[#1E2D4A] text-slate-300 hover:text-amber-400 hover:border-amber-500/40 transition-all"
-          title="Toggle Theme"
-        >
-          {darkMode ? <Moon className="w-5 h-5 text-blue-400" /> : <Sun className="w-5 h-5 text-amber-400" />}
-        </button>
 
         {/* User Profile Avatar */}
         <div className="flex items-center gap-3 pl-3 border-l border-[#1E2D4A]">

@@ -145,6 +145,13 @@ export const TelemetryProvider: React.FC<{ children: ReactNode }> = ({ children 
         const data = snapshot.val();
         if (data) {
           setSettings(prev => ({ ...prev, ...data }));
+          setTelemetry(prev => ({
+            ...prev,
+            ...(data.vehicleId ? { vehicleId: data.vehicleId } : {}),
+            ...(data.model ? { model: data.model } : {}),
+            ...(data.ownerName ? { owner: data.ownerName } : {}),
+            ...(data.registration ? { registration: data.registration } : {})
+          }));
         }
       });
       return () => unsubscribe();
@@ -176,9 +183,16 @@ export const TelemetryProvider: React.FC<{ children: ReactNode }> = ({ children 
           const newCurrent = Number(data.motorCurrent || (newSpeed > 0 ? (0.5 + newSpeed * 0.15) : 0));
           const newVoltage = Number(data.batteryVoltage || data.controllerVoltage || 12.6);
 
+          const rawLock = String(data.sideLockStatus || '').toUpperCase();
+          const mappedLockStatus: 'LOCKED' | 'UNLOCKED' | 'BROKEN' | 'SAFE' | 'WEB_LOCKED' = 
+            (rawLock === 'SAFE' || rawLock === 'LOCKED' || rawLock === 'WEB_LOCKED') 
+              ? 'LOCKED' 
+              : (rawLock === 'UNLOCKED' ? 'UNLOCKED' : (rawLock === 'BROKEN' ? 'BROKEN' : 'LOCKED'));
+
           setTelemetry(prev => ({
             ...prev,
             ...data,
+            sideLockStatus: mappedLockStatus,
             vehicleSpeed: newSpeed,
             motorRPM: newRpm,
             motorCurrent: Number(newCurrent.toFixed(2)),
@@ -386,14 +400,35 @@ export const TelemetryProvider: React.FC<{ children: ReactNode }> = ({ children 
       const updated = { ...prev, ...newSettings };
       try {
         // Persist full settings to Firebase /settings node
-        // ESP32 reads emergency contacts from /settings/emergencyContact1
         set(ref(database, 'settings'), updated);
       } catch (e) {
         console.error("Firebase settings sync error:", e);
       }
       return updated;
     });
-    addLog('SUCCESS', 'System Configuration & Emergency Phone Synced to Firebase');
+
+    setTelemetry(prev => {
+      const updatedTelemetry = {
+        ...prev,
+        ...(newSettings.vehicleId ? { vehicleId: newSettings.vehicleId } : {}),
+        ...(newSettings.model ? { model: newSettings.model } : {}),
+        ...(newSettings.ownerName ? { owner: newSettings.ownerName } : {}),
+        ...(newSettings.registration ? { registration: newSettings.registration } : {})
+      };
+      try {
+        update(ref(database, 'telemetry'), {
+          ...(newSettings.vehicleId ? { vehicleId: newSettings.vehicleId } : {}),
+          ...(newSettings.model ? { model: newSettings.model } : {}),
+          ...(newSettings.ownerName ? { owner: newSettings.ownerName } : {}),
+          ...(newSettings.registration ? { registration: newSettings.registration } : {})
+        });
+      } catch (e) {
+        console.error("Firebase telemetry profile sync error:", e);
+      }
+      return updatedTelemetry;
+    });
+
+    addLog('SUCCESS', 'System Configuration & Vehicle Profile Synced to Firebase');
   };
 
   return (
