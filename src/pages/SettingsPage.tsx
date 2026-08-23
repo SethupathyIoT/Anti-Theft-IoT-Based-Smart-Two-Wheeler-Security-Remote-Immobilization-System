@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { 
   Settings as SettingsIcon, 
   Save, 
-  Truck
+  Truck,
+  User
 } from 'lucide-react';
 import { useTelemetry } from '../context/TelemetryContext';
 
 export const SettingsPage: React.FC = () => {
   const { settings, telemetry, updateSettings } = useTelemetry();
 
-  // Flag to toggle emergency contacts card visibility (can be set to true whenever you want to re-enable it)
-  const SHOW_EMERGENCY_CONTACTS = false;
+  // Flag to toggle emergency contacts card visibility
+  const SHOW_EMERGENCY_CONTACTS = true;
 
   const [formData, setFormData] = useState({
     ...settings,

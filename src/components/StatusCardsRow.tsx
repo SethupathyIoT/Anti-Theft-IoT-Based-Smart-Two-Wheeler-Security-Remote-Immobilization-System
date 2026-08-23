@@ -7,12 +7,13 @@ import {
   Gauge, 
   Zap, 
   Signal, 
-  AlertTriangle 
+  AlertTriangle,
+  RotateCcw
 } from 'lucide-react';
 import { useTelemetry } from '../context/TelemetryContext';
 
 export const StatusCardsRow: React.FC = () => {
-  const { telemetry } = useTelemetry();
+  const { telemetry, restartVehicle } = useTelemetry();
 
   const isThreat = telemetry.vehicleStatus === 'THREAT_DETECTED' || telemetry.sideLockStatus === 'BROKEN';
   const isLockBroken = telemetry.sideLockStatus === 'BROKEN';
@@ -42,9 +43,19 @@ export const StatusCardsRow: React.FC = () => {
             {isThreat ? <ShieldAlert className="w-6 h-6 animate-bounce" /> : <ShieldCheck className="w-6 h-6" />}
           </div>
         </div>
-        <p className="text-xs text-slate-400 mt-3 font-medium">
-          {isThreat ? '🚨 Security breach active!' : '🛡️ No active threats detected'}
-        </p>
+        <div className="flex items-center justify-between mt-3 pt-2 border-t border-[#1E2D4A]/50">
+          <p className="text-[11px] text-slate-400 font-medium truncate">
+            {isThreat ? '🚨 Breach Active' : '🛡️ Threat Free'}
+          </p>
+          <button
+            onClick={restartVehicle}
+            className="px-2 py-0.5 rounded-md bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95 shrink-0"
+            title="Reset Mobilization & Restore Vehicle Motor"
+          >
+            <RotateCcw className="w-3 h-3 text-emerald-400" />
+            <span>Reset</span>
+          </button>
+        </div>
       </div>
 
       {/* Card 2: Side Lock Sensor Status */}
